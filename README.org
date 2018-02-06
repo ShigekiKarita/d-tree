@@ -6,15 +6,15 @@ $ dub run
 $ xdg-open plot_dtree.png
 #+end_src
 
-[[./example/plot_dtree_boundary/plot.png]]
+[[./example/plot_dtree_boundary/plot_dtree.png]]
 
 ** status
 
-*** DONE Decision tree
-*** TODO Random forest
-*** TODO Gradient boosting
-*** TODO Regression tree
-*** TODO Parallel processing
-*** TODO Serialization
+- DONE Decision tree
+- TODO Random forest
+- TODO Gradient boosting
+- TODO Regression tree
+- TODO Parallel processing
+- TODO Serialization
 
 
