@@ -3,15 +3,27 @@
 #+begin_src
 $ cd example/plot_dtree_boundary
 $ dub run
-$ xdg-open plot_dtree.png
+$ xdg-open *.png
 #+end_src
 
+- single decision tree result
+
+#+CAPTION: Decision tree
+#+NAME:   fig:DT
 [[./example/plot_dtree_boundary/plot_dtree.png]]
+
+- random forest result
+
+#+CAPTION: Random forest
+#+NAME:   fig:RF
+[[./example/plot_dtree_boundary/plot_forest.png]]
+
 
 ** status
 
+- DONE Classification
 - DONE Decision tree
-- TODO Random forest
+- DONE Random forest
 - TODO Gradient boosting
 - TODO Regression tree
 - TODO Parallel processing

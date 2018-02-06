@@ -1,7 +1,7 @@
 import std.stdio;
 
 
-void plotSurface(Model, Xs, Ys)(Model model, Xs xs, Ys ys, size_t resolution=100) {
+void plotSurface(Model, Xs, Ys)(string path, Model model, Xs xs, Ys ys, size_t resolution=100) {
     import std.algorithm : map, cartesianProduct, minElement, maxElement;
     import std.array : array;
     import std.range : iota;
@@ -52,8 +52,8 @@ void plotSurface(Model, Xs, Ys)(Model model, Xs xs, Ys ys, size_t resolution=100
     gg = colourGradient!XYZ( "cornflowerBlue-white-crimson" )
         .putIn(gg);
 
-    gg.save("plot_dtree.png");
-    writeln("saved to plot_dtree.png");
+    gg.save(path);
+    writeln("saved to " ~ path);
 }
 
 void main() {
@@ -62,6 +62,7 @@ void main() {
     import mir.random.variable : BernoulliVariable ;
     import numir.random : normal;
     import dtree.tree;
+    import dtree.forest;
 
     auto nsamples = 200;
     auto ndim = 2;
@@ -81,6 +82,10 @@ void main() {
 
     auto tree = ClassificationTree(2, 10);
     tree.fit(xs, ys);
-    plotSurface(tree, xs, ys);
+    plotSurface("plot_dtree.png", tree, xs, ys);
+
+    auto forest = ClassificationForest(2, 10, 10);
+    forest.fit(xs, ys);
+    plotSurface("plot_forest.png", forest, xs, ys);
 }
 

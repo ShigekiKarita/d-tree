@@ -47,7 +47,9 @@ struct Node {
                         this.depth + 1, newProbs);
     }
 
-    void fit(Xs, Ys)(Xs xs, Ys ys, size_t nClass) {
+    void fit(Xs, Ys)(Xs xs, Ys ys, size_t nClass) in {
+        assert(xs.length == ys.length);
+    } body {
         size_t[] lbestIndex, rbestIndex;
         auto lbestProbs = uniformProb(nClass);
         auto rbestProbs = uniformProb(nClass);
@@ -108,8 +110,6 @@ struct Node {
 }
 
 struct ClassificationTree {
-    // Xs xs;
-    // Ys ys;
     size_t nClass = 2;
     size_t maxDepth = 5;
     size_t minElement = 0;
