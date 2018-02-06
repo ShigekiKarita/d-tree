@@ -79,11 +79,8 @@ void main() {
         }
     }
 
-    auto tree = makeCTree(xs, ys);
-    tree.fit();
-    // auto model = new BinarySVM!double(3, 0.1);
-    // auto trainer = new SubgradientTrainer!(typeof(model))(model);
-    // trainer.fit(xs, ys);
+    auto tree = ClassificationTree(2, 10);
+    tree.fit(xs, ys);
     plotSurface(tree, xs, ys);
 }
 

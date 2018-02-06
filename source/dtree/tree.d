@@ -7,7 +7,7 @@ import mir.math : sum;
 import mir.ndslice : ipack, unpack, ndmap = map;
 import mir.ndslice.slice : sliced;
 import mir.ndslice.allocation : ndarray;
-import numir : ones, zeros, Ndim, permutation;
+import numir : ones, zeros, Ndim;
 
 import dtree.impurity : gini, entropy;
 
@@ -43,7 +43,7 @@ struct Node {
     }
 
     auto born(size_t[] newIndex, double[] newProbs) {
-        return new Node(this.index.sliced[newIndex.sliced].ndarray,
+        return new Node(newIndex,
                         this.depth + 1, newProbs);
     }
 
@@ -51,15 +51,16 @@ struct Node {
         size_t[] lbestIndex, rbestIndex;
         auto lbestProbs = uniformProb(nClass);
         auto rbestProbs = uniformProb(nClass);
-        // TODO support discrete feat
-        for (size_t sid = 0; sid < xs.length; ++sid) {
+
+        foreach (sid; this.index) {
             auto x = xs[sid];
+            // TODO support discrete feat
             for (size_t fid = 0; fid < x.length; ++fid) {
                 auto threshold = x[fid];
                 auto lprobs = zeros!double(nClass);
                 auto rprobs = zeros!double(nClass);
                 size_t[] lindex, rindex;
-                for (size_t i = 0; i < xs.length; ++i) {
+                foreach (i; this.index) {
                     if (xs[i][fid] > threshold) {
                         rindex ~= [i];
                         ++rprobs[ys[i]];
@@ -106,46 +107,29 @@ struct Node {
     }
 }
 
-struct ClassificationTree(Xs, Ys) {
-    Xs xs;
-    Ys ys;
+struct ClassificationTree {
+    // Xs xs;
+    // Ys ys;
     size_t nClass = 2;
-    size_t sampleSize = 0;
     size_t maxDepth = 5;
     size_t minElement = 0;
     Node* root;
 
-    auto samplePoints(I)(I indices) {
-        import mir.ndslice.allocation : ndarray;
-        auto ps = indices.length.permutation;
-        auto upper = this.sampleSize == 0 ? indices.length : min(indices.length, this.sampleSize);
-        return indices[ps][0 .. upper].ndarray;
-    }
+    auto fit(Xs, Ys)(Xs xs, Ys ys) {
+        void fitrec(Node* node) {
+            if (node.depth >= this.maxDepth || node.nElement <= this.minElement) return;
+            node.fit(xs, ys, this.nClass);
+            fitrec(node.left);
+            fitrec(node.right);
+        }
 
-    void fitrec(N)(ref N node) {
-        if (node.depth >= this.maxDepth || node.nElement < this.minElement) return;
-        node.fit(xs[node.index.sliced], ys[node.index.sliced], this.nClass);
-        this.fitrec(node.left);
-        this.fitrec(node.right);
-    }
-
-    auto fit() {
         import mir.ndslice : iota;
-        auto points = samplePoints(iota(ys.length));
-
+        auto points = iota(ys.length).ndarray;
         this.root = new Node(points, 0, this.nClass.uniformProb);
-        this.fitrec(root);
+        fitrec(this.root);
     }
 
     auto predict(X)(X x) {
         return this.root.predict(x).probs;
     }
-}
-
-auto makeCTree(Xs, Ys)(Xs xs, Ys ys) in {
-    static assert(Ndim!Xs == 2);
-    static assert(Ndim!Ys == 1);
-    assert(xs.length!0 == ys.length!0);
-} body {
-    return ClassificationTree!(Xs, Ys)(xs, ys);
 }
