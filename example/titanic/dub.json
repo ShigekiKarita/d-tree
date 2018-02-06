@@ -1,0 +1,17 @@
+{
+	"name": "titanic",
+	"authors": [
+		"Shigeki Karita"
+	],
+	"dependencies": {
+		"ggplotd": "~>1.1.4",
+		"numir": "~>0.0.7",
+        "d-tree": { "path": "../.." }
+	},
+    "sourcePaths": ["."],
+    "mainSourceFile": "app.d",
+	"description": "d-tree example of titanic csv table",
+	"copyright": "Copyright © 2017, Shigeki Karita",
+	"license": "BSL-1.0"
+}
+

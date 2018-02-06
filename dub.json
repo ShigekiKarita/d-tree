@@ -1,0 +1,13 @@
+{
+	"name": "d-tree",
+	"authors": [
+		"Shigeki Karita"
+	],
+	"dependencies": {
+		"numir": "~>0.0.7",
+		"ggplotd": "~>1.1.4"
+	},
+	  "description": "Decision tree library for D",
+	"copyright": "Copyright © 2018, Shigeki Karita",
+	"license": "BSL-1.0"
+}
