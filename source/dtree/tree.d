@@ -12,7 +12,16 @@ import numir : ones, zeros, Ndim;
 import dtree.impurity : gini, entropy;
 
 struct RegressionTree {
-    // not implemented
+    size_t maxDepth = 5;
+    size_t minElement = 0;
+
+    auto fit(Xs, Ys)(Xs xs, Ys ys) {
+        
+    }
+
+    auto predict(X)(X x) {
+        
+    }
 }
 
 auto uniformProb(T=double)(size_t nClass) {
@@ -20,7 +29,7 @@ auto uniformProb(T=double)(size_t nClass) {
 }
 
 
-struct Node {
+struct ClassificationNode {
     size_t[] index;
     size_t depth = 0;
     double[] probs;
@@ -28,9 +37,9 @@ struct Node {
     size_t bestFeatId = 0;
     size_t bestSampleId = 0;
     double bestThreshold = 0;
-    double bestImpurity = double.infinity;
+    double bestImpurity = double.nan;
 
-    Node* left, right;
+    typeof(this)* left, right;
 
     @property
     const nElement() pure {
@@ -43,16 +52,22 @@ struct Node {
     }
 
     auto born(size_t[] newIndex, double[] newProbs) {
-        return new Node(newIndex,
-                        this.depth + 1, newProbs);
+        return new typeof(this)(newIndex, this.depth + 1, newProbs);
     }
 
-    void fit(Xs, Ys)(Xs xs, Ys ys, size_t nClass) in {
+    void fit(alias ImpurityFun, Xs, Ys)(Xs xs, Ys ys, size_t nClass) in {
+        assert(this.index.length > 0);
         assert(xs.length == ys.length);
-    } body {
+    } out {
+        import std.array : array;
+        import std.algorithm : sort;
+        assert(sort(this.left.index ~ this.right.index).array == this.index);
+    } do {
+        import std.math : isNaN;
         size_t[] lbestIndex, rbestIndex;
         auto lbestProbs = uniformProb(nClass);
         auto rbestProbs = uniformProb(nClass);
+        this.bestImpurity = double.nan;
 
         foreach (sid; this.index) {
             auto x = xs[sid];
@@ -79,25 +94,25 @@ struct Node {
                 if (rsum > 0.0) {
                     rprobs[] /= rsum;
                 }
-                auto impurity = (gini(lprobs) * lindex.length +
-                                 gini(rprobs) * rindex.length) / xs.length;
+                const impurity = (ImpurityFun(lprobs) * lindex.length +
+                                  ImpurityFun(rprobs) * rindex.length) / xs.length;
                 // writeln("left: ", lprobs, "right: ", rprobs);
-                if (impurity < this.bestImpurity) {
+                if (this.bestImpurity.isNaN || impurity < this.bestImpurity) {
                     // TODO randomly update when impurity == this.bestImpurity
                     this.bestImpurity = impurity;
                     this.bestSampleId = sid;
                     this.bestFeatId = fid;
                     this.bestThreshold = threshold;
-                    lbestIndex = lindex;
-                    rbestIndex = rindex;
+                    lbestIndex = lindex.dup;
+                    rbestIndex = rindex.dup;
                     lbestProbs = lprobs.ndarray;
                     rbestProbs = rprobs.ndarray;
                 }
             }
         }
-        writefln("depth: %d, impurity: %f, probs: %s, L: %d, R: %d",
+        writefln("depth: %d, impurity: %f, probs: %s, L: %d, R: %d, All: %d",
                  this.depth, this.bestImpurity, this.probs,
-                 lbestIndex.length, rbestIndex.length);
+                 lbestIndex.length, rbestIndex.length, this.index.length);
         this.left = this.born(lbestIndex, lbestProbs);
         this.right = this.born(rbestIndex, rbestProbs);
     }
@@ -113,19 +128,20 @@ struct ClassificationTree {
     size_t nClass = 2;
     size_t maxDepth = 5;
     size_t minElement = 0;
-    Node* root;
+    alias NodeT = ClassificationNode;
+    NodeT* root;
 
-    auto fit(Xs, Ys)(Xs xs, Ys ys) {
-        void fitrec(Node* node) {
+    auto fit(alias ImpurityFun=entropy, Xs, Ys)(Xs xs, Ys ys) {
+        void fitrec(NodeT* node) {
             if (node.depth >= this.maxDepth || node.nElement <= this.minElement) return;
-            node.fit(xs, ys, this.nClass);
+            node.fit!ImpurityFun(xs, ys, this.nClass);
             fitrec(node.left);
             fitrec(node.right);
         }
 
         import mir.ndslice : iota;
         auto points = iota(ys.length).ndarray;
-        this.root = new Node(points, 0, this.nClass.uniformProb);
+        this.root = new NodeT(points, 0, this.nClass.uniformProb);
         fitrec(this.root);
     }
 

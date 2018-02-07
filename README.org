@@ -10,13 +10,13 @@ $ xdg-open *.png
 
 #+CAPTION: Decision tree
 #+NAME:   fig:DT
-[[./example/plot_dtree_boundary/plot_dtree.png]]
+[[./example/plot_boundary/plot_dtree_gini.png]]
 
 - random forest result
 
 #+CAPTION: Random forest
 #+NAME:   fig:RF
-[[./example/plot_dtree_boundary/plot_forest.png]]
+[[./example/plot_boundary/plot_forest_gini.png]]
 
 
 ** status

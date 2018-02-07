@@ -1,5 +1,5 @@
 {
-	"name": "plot_dtree_boundary",
+	"name": "sin_regression",
 	"authors": [
 		"Shigeki Karita"
 	],
@@ -10,7 +10,7 @@
 	},
     "sourcePaths": ["."],
     "mainSourceFile": "app.d",
-	"description": "d-tree example of 2D decision boundary plot",
+	"description": "d-tree example of sin wave regression",
 	"copyright": "Copyright © 2017, Shigeki Karita",
 	"license": "BSL-1.0"
 }

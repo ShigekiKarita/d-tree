@@ -12,4 +12,10 @@ auto entropy(P)(P probs) {
     return -sum!"fast"(probs * probs.map!log);
 }
 
+auto mean(Xs)(Xs xs) {
+    return xs.sum!"fast" / xs.size;
+}
 
+auto regressionVariance(L, R)(L ls, R rs) {
+    return sum!"fast"((ls - ls.mean) ^^ 2 + (rs - rs.mean) ^^ 2);
+}
