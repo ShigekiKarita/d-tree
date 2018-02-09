@@ -7,7 +7,6 @@ language: d
 
 d:
   - ldc
-  - dmd
 
 env:
   - ARCH="x86_64"

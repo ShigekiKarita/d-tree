@@ -21,20 +21,20 @@ struct Regression {
     double threshold;
 
     void fit(X, Xs, Ys, I)(X x, Xs xs, Ys ys, I index, size_t fid, size_t nPreds) {
-        threshold = x[fid];
-        auto lrys = zeros(ys.length, ys[0].length);
-        auto lmean = zeros_like(ys[0]);
-        auto rmean = zeros_like(ys[0]);
+        this.threshold = x[fid];
+        auto lrys = zeros!double(ys.length, nPreds);
+        auto lmean = zeros!double(nPreds);
+        auto rmean = zeros!double(nPreds);
         size_t li = 0, ri = ys.length-1;
 
         // TODO use mir-algorithm
         foreach (i; index) {
-            if (xs[i][fid] > threshold) {
-                right.index ~= [i];
+            if (xs[i][fid] > this.threshold) {
+                this.right.index ~= [i];
                 lrys[ri--][] = ys[i];
                 rmean[] += ys[i];
             } else {
-                left.index ~= [i];
+                this.left.index ~= [i];
                 lrys[li++][] = ys[i];
                 lmean[] += ys[i];
             }
@@ -49,11 +49,11 @@ struct Regression {
             lys[0 .. $, i] -= lmean[i];
             rys[0 .. $, i] -= rmean[i];
         }
-        left.prediction = lmean.ndarray;
-        right.prediction = rmean.ndarray;
+        this.left.prediction = lmean.ndarray;
+        this.right.prediction = rmean.ndarray;
         // FIXME dmd requires .slice while ldc2 does not
-        left.impurity = (lys ^^ 2.0).slice.sum!"fast";
-        right.impurity = (rys ^^ 2.0).slice.sum!"fast";
+        this.left.impurity = (lys ^^ 2.0).slice.sum!"fast";
+        this.right.impurity = (rys ^^ 2.0).slice.sum!"fast";
     }
 }
 
@@ -67,7 +67,7 @@ unittest {
     Regression c;
     auto xs = [-2.0, -1.0, 0.0, 1.0].sliced.unsqueeze!1;
     auto ys = [-1.0, 0.0, 1.0, 2.0].sliced.unsqueeze!1;
-    c.fit(xs[2], xs, ys, iota(ys.length), 0, 2);
+    c.fit(xs[2], xs, ys, iota(4), 0, 1);
 
     assert(c.left.index == [0, 1, 2]);
     assert(c.right.index == [3]);
@@ -115,14 +115,15 @@ struct Classification(alias ImpurityFun) {
 
 ///
 unittest {
-    import mir.ndslice;
-    import numir;
-    import dtree.impurity;
+    import mir.ndslice : sliced, iota;
+    import numir : unsqueeze;
+    import dtree.impurity : gini, entropy;
 
     {
         Classification!entropy c;
         auto xs = [-2.0, -1.0, 0.0, 1.0].sliced.unsqueeze!1;
-        auto ys = [0, 0, 0, 1].sliced;
+        // for dmd ys needs to be long or size_t
+        auto ys = [0, 0, 0, 1].sliced!long;
         c.fit(xs[2], xs, ys, iota(ys.length), 0, 2);
 
         assert(c.left.index == [0, 1, 2]);
@@ -136,7 +137,7 @@ unittest {
     {
         Classification!gini c;
         auto xs = [-2.0, -1.0, 0.0, 1.0].sliced.unsqueeze!1;
-        auto ys = [0, 0, 0, 1].sliced;
+        auto ys = [0, 0, 0, 1].sliced!long;
         c.fit(xs[2], xs, ys, iota(ys.length), 0, 2);
 
         assert(c.left.index == [0, 1, 2]);
