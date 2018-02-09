@@ -12,9 +12,13 @@ d:
 env:
   - ARCH="x86_64"
 
-install:
-  - dub fetch doveralls
+# install:
+#   - dub fetch doveralls
 
 script:
   - dub test --build=unittest-cov
-  - dub run doveralls
+  - cd example; ls | xargs -I{} -c "cd {}; dub"; cd ..
+
+after_success:
+  # - dub run doveralls
+  - bash <(curl -s https://codecov.io/bash)

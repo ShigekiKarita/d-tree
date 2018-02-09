@@ -4,8 +4,7 @@ auto readCSV(in string path) {
     import std.csv;
     import std.algorithm;
     import std.array;
-    auto file = File("../data/titanic/train.csv", "r");
-    auto dataset = file.byLine.joiner("\n").csvReader!(string[string])(null);
+    auto dataset = File(path).byLine.joiner("\n").csvReader!(string[string])(null);
     return dataset;
 }
 
@@ -43,8 +42,8 @@ struct TitanicEntry {
 void main() {
     import std.array;
     import std.algorithm;
-    auto trainraw = readCSV("data/titanic/train.csv").array;
-    auto testraw = readCSV("data/titanic/test.csv").array;
+    auto trainraw = readCSV("data/train.csv").array;
+    auto testraw = readCSV("data/test.csv").array;
     // auto passengerId = test.attr("PassengerId").map!(to!int).uniq.array;
     // preprocess
     auto trainset = trainraw.map!TitanicEntry.array;
