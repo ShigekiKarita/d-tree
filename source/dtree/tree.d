@@ -3,7 +3,7 @@ module dtree.tree;
 import dtree.impurity : entropy;
 import dtree.traits : isDecisionPolicy;
 import dtree.node : Node;
-import dtree.decision : Regression, Classification;
+import dtree.decision : Regression, Classification, DecisionInfo;
 
 struct DecisionTree(DecisionPolicy) {
     static assert(isDecisionPolicy!DecisionPolicy);
@@ -27,7 +27,7 @@ struct DecisionTree(DecisionPolicy) {
 
         auto points = iota(ys.length).array;
         auto initProb = ones(this.nOutput) * double.nan;
-        this.root = new Node(points, 0, initProb.ndarray);
+        this.root = new Node(0, DecisionInfo(points, initProb.ndarray, double.nan));
         fitrec(this.root);
     }
 

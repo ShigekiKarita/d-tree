@@ -1,10 +1,10 @@
 module dtree.traits;
 
-import dtree.decision : DecisionFields;
+import dtree.decision : DecisionInfo;
 
-enum hasDecisionFields(P) = is(typeof(P.init.fields) == DecisionFields);
+enum hasDecisionInfo(P) = is(typeof(P.init.left) == DecisionInfo) && is(typeof(P.init.right) == DecisionInfo);
 
-enum isRegressionPolicy(P) = hasDecisionFields!P && is(typeof({
+enum isRegressionPolicy(P) = hasDecisionInfo!P && is(typeof({
             import numir : zeros;
             auto xs = zeros(3, 3);
             auto ys = zeros(3, 1);
@@ -13,7 +13,7 @@ enum isRegressionPolicy(P) = hasDecisionFields!P && is(typeof({
             p.fit(xs[0], xs, ys, id, 0, 1);
         }));
 
-enum isClassificationPolicy(P) = hasDecisionFields!P && is(typeof({
+enum isClassificationPolicy(P) = hasDecisionInfo!P && is(typeof({
             import numir : zeros;
             auto xs = zeros(3, 3);
             auto ys = zeros!int(3);
@@ -23,8 +23,6 @@ enum isClassificationPolicy(P) = hasDecisionFields!P && is(typeof({
         }));
 
 enum isDecisionPolicy(P) = isRegressionPolicy!P || isClassificationPolicy!P;
-
-
 
 @safe @nogc
 unittest {

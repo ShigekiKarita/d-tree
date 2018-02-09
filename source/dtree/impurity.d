@@ -9,7 +9,8 @@ auto gini(P)(P probs) {
 }
 
 auto entropy(P)(P probs) {
-    return -sum!"fast"(probs * probs.map!log);
+    if (probs.sum!"fast" == 0.0) return 0.0;
+    return -sum!"fast"(probs.map!(p => p == 0.0 ? 0.0 : p * log(p)));
 }
 
 auto mean(Xs)(Xs xs) {
