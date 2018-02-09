@@ -1,12 +1,7 @@
 module dtree.node;
 
-import std.stdio : writefln;
 
-import mir.ndslice.allocation : ndarray;
-import numir : ones, zeros, Ndim;
-
-
-mixin template NodeMixin() {
+struct Node {
     size_t[] index;
     size_t depth = 0;
     double[] prediction;
@@ -36,39 +31,8 @@ mixin template NodeMixin() {
         auto next = x[this.bestFeatId] > this.bestThreshold ? right : left;
         return next.predict(x);
     }
-}
 
-
-struct RegressionNode {
-    mixin NodeMixin;
-
-    void fit(alias ImpurityFun, Xs, Ys)(Xs xs, Ys ys) in {
-        assert(this.index.length > 0);
-        assert(xs.length == ys.length);
-    } out {
-        import std.array : array;
-        import std.algorithm : sort;
-        // assert(sort(this.left.index ~ this.right.index).array == this.index);
-    } do {
-
-    }
-}
-
-auto uniformProb(size_t nClass) pure {
-    return ndarray(ones!double(nClass) / nClass);
-}
-
-auto normalizeProb(T)(T probs) pure {
-    import mir.math : sum;
-    auto psum = probs.sum!"fast";
-    return psum > 0.0 ? probs / psum : probs / 1.0;
-}
-
-
-struct ClassificationNode {
-    mixin NodeMixin;
-
-    void fit(alias ImpurityFun, Xs, Ys)(Xs xs, Ys ys, size_t nClass) in {
+    void fit(Decision, Xs, Ys)(Xs xs, Ys ys) in {
         assert(this.index.length > 0);
         assert(xs.length == ys.length);
     } out {
@@ -77,49 +41,33 @@ struct ClassificationNode {
         assert(sort(this.left.index ~ this.right.index).array == this.index);
     } do {
         import std.math : isNaN;
-        size_t[] lbestIndex, rbestIndex;
-        auto lbestProbs = uniformProb(nClass);
-        auto rbestProbs = uniformProb(nClass);
         this.bestImpurity = double.nan;
+        Decision bestDecision;
 
         foreach (sid; this.index) {
             auto x = xs[sid];
             // TODO support discrete feat
             for (size_t fid = 0; fid < x.length; ++fid) {
-                auto threshold = x[fid];
-                auto lprobs = zeros!double(nClass);
-                auto rprobs = zeros!double(nClass);
-                size_t[] lindex, rindex;
-                foreach (i; this.index) {
-                    if (xs[i][fid] > threshold) {
-                        rindex ~= [i];
-                        ++rprobs[ys[i]];
-                    } else {
-                        lindex ~= [i];
-                        ++lprobs[ys[i]];
-                    }
-                }
-                lprobs[] = lprobs.normalizeProb;
-                rprobs[] = rprobs.normalizeProb;
-                const impurity = (ImpurityFun(lprobs) * lindex.length +
-                                  ImpurityFun(rprobs) * rindex.length) / xs.length;
-                if (this.bestImpurity.isNaN || impurity < this.bestImpurity) {
+                Decision decision;
+                decision.fit(x, xs, ys, this.index, fid, this.prediction.length);
+                if (this.bestImpurity.isNaN || decision.impurity < this.bestImpurity) {
                     // TODO randomly update when impurity == this.bestImpurity
-                    this.bestImpurity = impurity;
+                    bestDecision = decision;
+                    this.bestImpurity = decision.impurity;
                     this.bestSampleId = sid;
                     this.bestFeatId = fid;
-                    this.bestThreshold = threshold;
-                    lbestIndex = lindex.dup;
-                    rbestIndex = rindex.dup;
-                    lbestProbs = lprobs.ndarray;
-                    rbestProbs = rprobs.ndarray;
+                    this.bestThreshold = decision.threshold;
                 }
             }
         }
-        writefln("depth: %d, impurity: %f, probs: %s, L: %d, R: %d, All: %d",
-                 this.depth, this.bestImpurity, this.prediction,
-                 lbestIndex.length, rbestIndex.length, this.index.length);
-        this.left = this.born(lbestIndex, lbestProbs);
-        this.right = this.born(rbestIndex, rbestProbs);
+
+        with (bestDecision) {
+            import std.stdio : writefln;
+            writefln("depth: %d, impurity: %f, threshold %f, predict: %s, L: %d, R: %d, All: %d",
+                     this.depth, this.bestImpurity, this.bestThreshold, this.prediction,
+                     leftIndex.length, rightIndex.length, this.index.length);
+            this.left = this.born(leftIndex, leftPrediction);
+            this.right = this.born(rightIndex, rightPrediction);
+        }
     }
 }

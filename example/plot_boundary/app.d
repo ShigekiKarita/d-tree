@@ -69,7 +69,7 @@ void main() {
     import numir.random : normal;
 
     import dtree.tree : ClassificationTree;
-    import dtree.forest : RandomForest;
+    import dtree.forest : toRandomForest;
     import dtree.impurity : gini, entropy;
 
     auto nsamples = 200;
@@ -83,18 +83,20 @@ void main() {
         if (ys[i] == 1.0) { xs[i][] += 2.0; }
     }
 
-    auto tree = ClassificationTree(2, 10);
-    tree.fit!gini(xs, ys);
-    plotSurface("plot_dtree_gini.png", tree, xs, ys);
+    auto gtree = ClassificationTree!gini(2, 10);
+    gtree.fit(xs, ys);
+    plotSurface("plot_dtree_gini.png", gtree, xs, ys);
 
-    tree.fit!entropy(xs, ys);
-    plotSurface("plot_dtree_entropy.png", tree, xs, ys);
+    auto etree = ClassificationTree!entropy(2, 10);
+    etree.fit(xs, ys);
+    plotSurface("plot_dtree_entropy.png", etree, xs, ys);
 
 
-    auto forest = RandomForest!ClassificationTree(tree, 10);
-    forest.fit!gini(xs, ys);
-    plotSurface("plot_forest_gini.png", forest, xs, ys);
-    forest.fit!entropy(xs, ys);
-    plotSurface("plot_forest_entropy.png", forest, xs, ys);
+    auto gforest = toRandomForest(gtree, 10);
+    gforest.fit(xs, ys);
+    plotSurface("plot_forest_gini.png", gforest, xs, ys);
+    auto eforest = toRandomForest(etree, 10);
+    eforest.fit(xs, ys);
+    plotSurface("plot_forest_entropy.png", eforest, xs, ys);
 }
 

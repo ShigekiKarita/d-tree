@@ -13,9 +13,10 @@ auto entropy(P)(P probs) {
 }
 
 auto mean(Xs)(Xs xs) {
+    import numir : size;
     return xs.sum!"fast" / xs.size;
 }
 
-auto regressionVariance(L, R)(L ls, R rs) {
-    return sum!"fast"((ls - ls.mean) ^^ 2 + (rs - rs.mean) ^^ 2);
+auto variance(Xs)(Xs xs) {
+    return sum!"fast"((xs - xs.mean) ^^ 2);
 }

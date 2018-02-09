@@ -1,41 +1,33 @@
 module dtree.tree;
 
-import dtree.impurity : gini, entropy;
-import dtree.node;
+import dtree.impurity : entropy;
+import dtree.traits : isDecisionPolicy;
+import dtree.node : Node;
+import dtree.decision : Regression, Classification;
 
-struct RegressionTree {
+struct DecisionTree(DecisionPolicy) {
+    static assert(isDecisionPolicy!DecisionPolicy);
+    size_t nOutput = 2;
     size_t maxDepth = 5;
     size_t minElement = 0;
+    Node* root;
 
     auto fit(Xs, Ys)(Xs xs, Ys ys) {
-        
-    }
-
-    auto predict(X)(X x) pure {
-        
-    }
-}
-
-
-struct ClassificationTree {
-    size_t nClass = 2;
-    size_t maxDepth = 5;
-    size_t minElement = 0;
-    alias NodeT = ClassificationNode;
-    NodeT* root;
-
-    auto fit(alias ImpurityFun=entropy, Xs, Ys)(Xs xs, Ys ys) {
-        void fitrec(NodeT* node) {
+        void fitrec(Node* node) {
             if (node.depth >= this.maxDepth || node.nElement <= this.minElement) return;
-            node.fit!ImpurityFun(xs, ys, this.nClass);
+            node.fit!DecisionPolicy(xs, ys);
             fitrec(node.left);
             fitrec(node.right);
         }
 
         import std.range : iota;
         import std.array : array;
+        import numir : ones;
+        import mir.ndslice : ndarray;
+
         auto points = iota(ys.length).array;
-        this.root = new NodeT(points, 0, this.nClass.uniformProb);
+        auto initProb = ones(this.nOutput) * double.nan;
+        this.root = new Node(points, 0, initProb.ndarray);
         fitrec(this.root);
     }
 
@@ -43,3 +35,6 @@ struct ClassificationTree {
         return this.root.predict(x);
     }
 }
+
+alias ClassificationTree(alias ImpurityFun=entropy) = DecisionTree!(Classification!ImpurityFun);
+alias RegressionTree = DecisionTree!Regression;
