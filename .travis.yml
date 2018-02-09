@@ -17,7 +17,7 @@ env:
 
 script:
   - dub test --build=unittest-cov
-  - cd example; ls | xargs -I{} -c "cd {}; dub"; cd ..
+  - cd example; ls | xargs -I{} sh -c "cd {}; dub"; cd ..
 
 after_success:
   # - dub run doveralls
