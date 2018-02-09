@@ -51,8 +51,9 @@ struct Regression {
         }
         left.prediction = lmean.ndarray;
         right.prediction = rmean.ndarray;
-        left.impurity = (lys ^^ 2.0).sum!"fast";
-        right.impurity = (rys ^^ 2.0).sum!"fast";
+        // FIXME dmd requires .slice while ldc2 does not
+        left.impurity = (lys ^^ 2.0).slice.sum!"fast";
+        right.impurity = (rys ^^ 2.0).slice.sum!"fast";
     }
 }
 
