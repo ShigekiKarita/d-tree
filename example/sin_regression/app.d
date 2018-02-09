@@ -38,7 +38,7 @@ void plot(Model, Xs, Ys)(string path, Model model, Xs xs, Ys ys, size_t resoluti
 
     // plot ground truth (sin function)
     gg = iota(grid.length)
-      .map!(i => aes!("x", "y", "colour", "size")(grid[i][0], sin(grid[i][0]), 1, 0.5))
+      .map!(i => aes!("x", "y", "colour", "size")(grid[i][0], sin(grid[i][0]), 1, 0.2))
       .geomLine
       .putIn(gg);
 
@@ -64,10 +64,10 @@ void main() {
     auto ys = xs.map!sin + normal(xs.shape) * 0.1;
     auto tree = RegressionTree(1, 10);
     tree.fit(xs, ys);
-    plot("plot_tree.png", tree, xs, ys);
+    // plot("plot_tree.png", tree, xs, ys);
 
-    auto forest = RandomForest!RegressionTree(tree, 3);
-    forest.fit(xs, ys);
-    plot("plot_forest.png", forest, xs, ys);
+    // auto forest = RandomForest!RegressionTree(tree, 3);
+    // forest.fit(xs, ys);
+    // plot("plot_forest.png", forest, xs, ys);
 }
 

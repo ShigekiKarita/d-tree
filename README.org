@@ -1,32 +1,47 @@
 * Decision tree library for D
 
+getting started
+
 #+begin_src
+$ curl https://dlang.org/install.sh | bash -s # install dlang compiler
+$ source ~/dlang/<your-compiler>/activate
 $ cd example/plot_dtree_boundary
 $ dub run
 $ xdg-open *.png
 #+end_src
 
-- single decision tree result
+- single decision tree classification result
 
-#+CAPTION: Decision tree
-#+NAME:   fig:DT
 [[./example/plot_boundary/plot_dtree_gini.png]]
 
-- random forest result
+- random forest classification result
 
-#+CAPTION: Random forest
-#+NAME:   fig:RF
 [[./example/plot_boundary/plot_forest_gini.png]]
 
 
-** status
+- single decision tree regression result in `example/sin_regression`
 
-- DONE Classification
-- DONE Decision tree
-- DONE Random forest
+[[./example/sin_regression/plot_tree.png]]
+
+
+- random forest regression result in `example/sin_regression`
+
+[[./example/sin_regression/plot_forest.png]]
+
+
+** Roadmap
+
+- DONE Classification tree (2/6)
+- DONE Random forest (2/7)
+- DONE Regression tree (2/9)
+- TODO bootstrap sampling in RF
 - TODO Gradient boosting
-- TODO Regression tree
 - TODO Parallel processing
 - TODO Serialization
+- TODO Support libsvm format
 
+** Reference
+
+- [[https://web.stanford.edu/~hastie/Papers/ESLII.pdf][The Elements of Statistical Learning 2nd Edition]]
+- [[https://arxiv.org/pdf/1603.02754.pdf][XGBoost: A Scalable Tree Boosting System]]
 

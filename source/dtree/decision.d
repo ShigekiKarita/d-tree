@@ -50,7 +50,8 @@ struct Regression {
         }
         leftPrediction = lmean.ndarray;
         rightPrediction = rmean.ndarray;
-        impurity = (sum!"fast"(lys ^^ 2.0) + sum!"fast"(rys ^^ 2.0)) / index.length;
+        // FIXME need .slice in here iff compiling with dmd
+        impurity = ((lys ^^ 2.0).slice.sum!"fast" + (rys ^^ 2.0).sum!"fast") / index.length;
     }
 }
 
