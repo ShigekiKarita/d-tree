@@ -1,5 +1,10 @@
 * Decision tree library for D
 
+[[https://travis-ci.org/ShigekiKarita/d-tree][file:https://travis-ci.org/ShigekiKarita/d-tree.svg?branch=master]]
+[[https://codecov.io/gh/ShigekiKarita/d-tree][file:https://codecov.io/gh/ShigekiKarita/d-tree/branch/master/graph/badge.svg]]
+
+
+
 getting started
 
 #+begin_src
