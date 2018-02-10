@@ -1,7 +1,7 @@
 module dtree.node;
 
 import dtree.decision : DecisionInfo;
-
+import mir.random : rand;
 
 struct Node {
     size_t depth = 0;
@@ -46,15 +46,15 @@ struct Node {
 
         auto bestImpurity = double.nan;
         Decision bestDecision;
-        foreach (sid; this.index) {
-            auto x = xs[sid];
-            // TODO support discrete feat
-            for (size_t fid = 0; fid < x.length; ++fid) {
+        // TODO support discrete feat
+        for (size_t fid = 0; fid < xs[0].length; ++fid) {
+            foreach (sid; this.index) {
+                auto x = xs[sid];
                 Decision decision;
                 decision.fit(x, xs, ys, this.index, fid, this.prediction.length);
                 auto imp = decision.left.impurity + decision.right.impurity;
-                if (bestImpurity.isNaN || imp < bestImpurity) {
-                    // TODO randomly update when impurity == this.bestImpurity
+                auto equalUpdate = imp == bestImpurity && rand!bool();
+                if (bestImpurity.isNaN || imp < bestImpurity || equalUpdate) {
                     bestDecision = decision;
                     bestImpurity = imp;
                     this.bestSampleId = sid;

@@ -1,12 +1,12 @@
 {
-	"name": "d-tree",
-	"authors": [
-		"Shigeki Karita"
-	],
-	"dependencies": {
-		"numir": "~>0.0.7"
-	},
-	  "description": "Decision tree library for D",
-	"copyright": "Copyright © 2018, Shigeki Karita",
-	"license": "BSL-1.0"
+    "name": "d-tree",
+    "authors": [
+        "Shigeki Karita"
+    ],
+    "dependencies": {
+        "numir": "~>0.0.8"
+    },
+    "description": "Decision tree library for D",
+    "copyright": "Copyright © 2018, Shigeki Karita",
+    "license": "BSL-1.0"
 }

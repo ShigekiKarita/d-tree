@@ -1,17 +1,16 @@
 {
-	"name": "plot_boundary",
-	"authors": [
-		"Shigeki Karita"
-	],
-	"dependencies": {
-		"ggplotd": "~>1.1.4",
-		"numir": "~>0.0.7",
+    "name": "plot_boundary",
+    "authors": [
+        "Shigeki Karita"
+    ],
+    "dependencies": {
+        "ggplotd": "~>1.1.4",
+        "numir": "~>0.0.8",
         "d-tree": { "path": "../.." }
-	},
+    },
     "sourcePaths": ["."],
     "mainSourceFile": "app.d",
-	"description": "d-tree example of 2D decision boundary plot",
-	"copyright": "Copyright © 2017, Shigeki Karita",
-	"license": "BSL-1.0"
+    "description": "d-tree example of 2D decision boundary plot",
+    "copyright": "Copyright © 2017, Shigeki Karita",
+    "license": "BSL-1.0"
 }
-
