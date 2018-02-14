@@ -57,6 +57,7 @@ void main() {
 
     import dtree.tree : RegressionTree;
     import dtree.forest : RandomForest;
+    import dtree.boosting : GradientBoosting;
 
     auto nsamples = 100;
     auto ndim = 1;
@@ -64,10 +65,14 @@ void main() {
     auto ys = xs.map!sin + normal(xs.shape) * 0.1;
     auto tree = RegressionTree(1, 10);
     tree.fit(xs, ys);
-    // plot("plot_tree.png", tree, xs, ys);
+    plot("plot_tree.png", tree, xs, ys);
 
-    // auto forest = RandomForest!RegressionTree(tree, 3);
-    // forest.fit(xs, ys);
-    // plot("plot_forest.png", forest, xs, ys);
+    auto forest = RandomForest!RegressionTree(tree, 3);
+    forest.fit(xs, ys);
+    plot("plot_forest.png", forest, xs, ys);
+
+    auto gbt = GradientBoosting!RegressionTree(tree, 10);
+    gbt.fit(xs, ys);
+    plot("plot_boosting.png", gbt, xs, ys);
 }
 
