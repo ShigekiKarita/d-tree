@@ -4,7 +4,8 @@
         "Shigeki Karita"
     ],
     "dependencies": {
-        "numir": "~>0.0.8"
+        "numir": "~>0.0.9",
+        "d-graphviz": "~>0.0.1"
     },
     "description": "Decision tree library for D",
     "copyright": "Copyright © 2018, Shigeki Karita",
