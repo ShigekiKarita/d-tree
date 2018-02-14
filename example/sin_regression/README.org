@@ -1,0 +1,15 @@
+* Sin wave fitting
+
+simple regression example
+
+- single decision tree
+
+[[plot_tree.png]]
+
+- random forest (wip)
+
+[[./plot_forest.png]]
+
+- gradient boosting (wip)
+
+[[./plot_boosting.png]]
